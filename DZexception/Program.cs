@@ -9,7 +9,7 @@
             var b = input.b;
             var c = input.c;
 
-           var sol = Solution(a, b, c);
+            var sol = Solution(a, b, c);
             if (sol.D > 0)
             {
                 Console.WriteLine("x1= {0}\n x2= {1}", sol.x1, sol.x2);
@@ -18,7 +18,7 @@
             {
                 Console.WriteLine("x= {0}", sol.x1);
             }
-            
+
         }
 
     }
@@ -27,18 +27,26 @@
     //Обработка ввода
     public static (int a, int b, int c) Processing(string a, string b, string c)
     {
+        var i = 0;
+        string perem = "a";
+
         try
         {
             var aInt = Int32.Parse(a);
+            i++;
             var bInt = Int32.Parse(b);
+            i++;
             var cInt = Int32.Parse(c);
-
+            i++;
             return (aInt, bInt, cInt);
         }
+
         catch
         {
+            if (i == 0) { perem = "a"; } else if (i == 1) { perem = "b"; } else if (i == 2) { perem = "c"; }
+
             Console.BackgroundColor = ConsoleColor.Red;
-            Console.WriteLine($"Неверный формат параметра");
+            Console.WriteLine($"Неверный формат параметра {perem}");
             Console.WriteLine($" a = {a} \n b = {b} \n c = {c}");
             Console.ResetColor();
             return StartInput();
@@ -76,13 +84,13 @@
         if (D > 0 || D == 0)
         {
             x1 = (int)((-b + Math.Sqrt(D)) / (2 * a));
-            x2 = (int)((-b - Math.Sqrt(D)) / (2 * a)); 
+            x2 = (int)((-b - Math.Sqrt(D)) / (2 * a));
             return (x1, x2, D);
         }
 
 
         else
-        {            
+        {
             Console.WriteLine("Действительных корней нет");
             return (0, 0, 0);
         }
