@@ -4,33 +4,23 @@ internal class Program
 {
     private static void Main(string[] args)
     {
-        var a = "";
-        var b = "";
-        var c = "";
+
+       
         string[] menuItems = new string[] { "a", "b", "c" };
-        int row = Console.CursorTop;
+        int row = Console.CursorTop + 1;
         int col = Console.CursorLeft;
         int index = 0;
         
-        
+
 
         while (true)
         {
-            Console.WriteLine($"\n\n\n\n{a} * x^2 + {b} * x + {c} = 0");
-
             try
-            {
-
-
-                
-                Console.WriteLine();
-                Console.WriteLine();
-                Console.WriteLine();
+            {               
 
                 DrawMenu(menuItems, row, col, index);
-
-
-                switch (Console.ReadKey(true).Key)
+                var keyNow = Console.ReadKey();
+                switch (keyNow.Key)
                 {
                     case ConsoleKey.DownArrow:
                         if (index < menuItems.Length - 1)
@@ -42,9 +32,16 @@ internal class Program
                         break;
                     case ConsoleKey.Enter:
                         Console.Clear();
-                        var resultParse = Processing(a, b, c);
+                        var resultParse = Processing(menuItems[0], menuItems[1], menuItems[2]);
+                        if (resultParse.a == 0 && resultParse.b == 0 && resultParse.c == 0)
+                        {
+                            menuItems[0] = "a";
+                            menuItems[1] = "b";
+                            menuItems[2] = "c";
+                            break;
+                        }
                         var sol = Solution(resultParse.a, resultParse.b, resultParse.c);
-                        Console.WriteLine($"\n{a} * x^2 + {b} * x + {c} = 0");
+                        Console.WriteLine($"\n{menuItems[0]} * x^2 + {menuItems[1]} * x + {menuItems[2]} = 0");
                         if (sol.D > 0)
                         {
                             Console.WriteLine("x1= {0}\nx2= {1}", sol.x1, sol.x2);
@@ -55,28 +52,25 @@ internal class Program
                         }
                         Console.ReadLine();
                         Console.Clear();
-                        a = "";
-                        b = "";
-                        c = "";
+                        menuItems[0] = "a";
+                        menuItems[1] = "b";
+                        menuItems[2] = "c";
                         break;
                     default:
                         switch (index)
                         {
                             case 0:
-                                a = a + Console.ReadKey().KeyChar;
+                                menuItems[0] = menuItems[0].Trim('a') + keyNow.KeyChar;
                                 break;
                             case 1:
-                                b = b + Console.ReadKey().KeyChar;
+                                menuItems[1] = menuItems[1].Trim('b') + keyNow.KeyChar;
                                 break;
                             case 2:
-                                c = c + Console.ReadKey().KeyChar;
+                                menuItems[2] = menuItems[2].Trim('c') + keyNow.KeyChar;
                                 break;
                         }
-
                         break;
                 }
-
-                
 
             }
             catch (Exception Ex)
@@ -85,9 +79,9 @@ internal class Program
                 Console.WriteLine(Ex.Message);
                 Console.ReadLine();
                 Console.Clear();
-                a = "";
-                b = "";
-                c = "";
+                menuItems[0] = "a";
+                menuItems[1] = "b";
+                menuItems[2] = "c";
             }
 
         }
@@ -121,6 +115,7 @@ internal class Program
     private static void DrawMenu(string[] items, int row, int col, int index)
     {
         Console.SetCursorPosition(col, row);
+        Console.WriteLine($"{items[0]} * x^2 + {items[1]} * x + {items[2]} = 0");
         for (int i = 0; i < items.Length; i++)
         {
 
@@ -139,21 +134,35 @@ internal class Program
 
 
     //Обработка ввода
-    public static (int a, int b, int c) Processing(string a, string b, string c)
+    private static (int a, int b, int c) Processing(string a, string b, string c)
     {
         var i = 0;
         string perem = "a";
+        string err = "";
 
         try
         {
-            var aInt = Int32.Parse(a);
+            int aInt;
+            int bInt;
+            int cInt;
+            aInt = Int32.Parse(a.Trim('a'));
             i++;
-            var bInt = Int32.Parse(b);
+            bInt = Int32.Parse(b.Trim('b'));
             i++;
-            var cInt = Int32.Parse(c);
+            cInt = Int32.Parse(c.Trim('c'));
             return (aInt, bInt, cInt);
         }
-
+        catch (System.OverflowException)
+        {
+            Console.BackgroundColor = ConsoleColor.Green;
+            if (i == 0) { perem = "a"; } else if (i == 1) { perem = "b"; } else if (i == 2) { perem = "c"; }
+            if (i == 0) { err = a; } else if (i == 1) { err = b; } else if (i == 2) { err= c; }
+            Console.WriteLine($"{perem} = {err} диапазон значений int = От -2 147 483 648 до 2 147 483 647");
+            Console.ResetColor();
+            Console.ReadLine();
+            Console.Clear();
+            return (0, 0, 0);
+        }
         catch
         {
             if (i == 0) { perem = "a"; } else if (i == 1) { perem = "b"; } else if (i == 2) { perem = "c"; }
@@ -162,13 +171,15 @@ internal class Program
             Console.WriteLine($"Неверный формат параметра {perem}");
             Console.WriteLine($" a = {a} \n b = {b} \n c = {c}");
             Console.ResetColor();
-            return (0,0,0);
+            Console.ReadLine();
+            Console.Clear();
+            return (0, 0, 0);
             //return StartInput();
         }
     }
 
     //Ввод
-    public static (int a, int b, int c) StartInput()
+    private static (int a, int b, int c) StartInput()
     {
         Console.WriteLine("a * x^2 + b * x + c = 0");
         Console.WriteLine("Введите значение a:");
@@ -187,7 +198,7 @@ internal class Program
     }
 
     //Решение
-    public static (int x1, int x2, int D) Solution(int a, int b, int c)
+    private static (int x1, int x2, int D) Solution(int a, int b, int c)
     {
         int D;
         int x1;
